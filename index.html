@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dr. Mean</title>
+<meta name="description" content="It's Dr. Mean. Patient: Berlin.">
+<meta property="og:title" content="It's Dr. Mean.">
+<meta property="og:description" content="Street interviews in Berlin.">
+<meta property="og:url" content="https://drmean.com/">
+<meta name="theme-color" content="#F7F7FB">
+<link rel="icon" href="/assets/icon.svg?v=fb238d9d" type="image/svg+xml">
+<link rel="preload" href="/fonts/Anton-Regular.ttf" as="font" type="font/ttf" crossorigin>
+<style>
+  @font-face { font-family:"Anton"; src:url("/fonts/Anton-Regular.ttf") format("truetype"); font-display:swap; }
+  :root {
+    --coat:#F7F7FB; --paper:#FFFFFF; --shadow:#D9D8EC; --ink:#0E3B34; --patina:#2E8B78;
+    --mint:#E4F1ED; --neon:#C8FF3C; --muted:#5B6B67;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --display: "Anton", Impact, "Arial Narrow", sans-serif;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html, body { cursor:default; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; -webkit-tap-highlight-color:transparent; }
+  img, svg, a { -webkit-user-drag:none; user-drag:none; }
+  a, a * { cursor:pointer; }
+  h1, p, span, footer { cursor:default; }
+  html { background:var(--coat); }
+  body { color:var(--ink); font-family:-apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; min-height:100vh; overflow-x:hidden; }
+  body::before { content:""; position:fixed; inset:0; z-index:-1;
+    background:
+      repeating-linear-gradient(0deg, transparent 0 27px, #ECECF6 27px 28px),
+      repeating-linear-gradient(90deg, transparent 0 27px, #ECECF6 27px 28px), var(--coat); }
+  .wrap { max-width:480px; margin:0 auto; padding:calc(min(36vw, 168px) * 1.284 + 40px) 20px 40px; }
+  .mono { font-family:var(--mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; }
+  html { overflow-anchor:none; }
+
+  /* hero: sticker + title. On phones it is a sticky header that shrinks as you scroll (--p: 0 → 1) */
+  .hero { --p:0; position:fixed; top:0; left:0; right:0; z-index:4; display:flex; align-items:center; max-width:480px; margin:0 auto;
+    gap:calc(16px - 6px * var(--p)); padding:calc(22px - 14px * var(--p)) 20px calc(16px - 8px * var(--p)); }
+  .hero::before { content:""; position:absolute; inset:0 calc(50% - 50vw); z-index:-1; opacity:min(1, calc(var(--p) * 4));
+    background:rgba(247,247,251,.92); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border-bottom:2px solid var(--ink); }
+  .hero-art { flex:none; }
+  .sticker { position:relative; overflow:hidden; width:calc(min(36vw, 168px) - (min(36vw, 168px) - 58px) * var(--p)); height:calc(min(36vw, 168px) * 1.284 * (1 - var(--p)) + 60px * var(--p)); transform:rotate(-4deg); animation:slap .7s cubic-bezier(.2,1.4,.4,1) both; }
+  .sticker img { display:block; width:100%; height:auto; }
+  .sticker .full { opacity:calc(1.6 - var(--p) * 2.4); }
+  .sticker .head { position:absolute; inset:0; opacity:calc(var(--p) * 2.4 - .6); }
+  .sticker img.bump { animation:wobble .55s ease; }
+  @keyframes slap { from { opacity:0; transform:rotate(-14deg) scale(1.35); } to { opacity:1; transform:rotate(-4deg) scale(1); } }
+  @keyframes wobble { 0%,100% { transform:rotate(0); } 25% { transform:rotate(4deg); } 60% { transform:rotate(-3deg); } }
+  .hero-text { min-width:0; }
+
+
+  /* title */
+  h1 { font-family:var(--display); font-weight:400; text-transform:uppercase; line-height:.9; }
+  h1 .its { display:block; overflow:hidden; color:var(--patina); letter-spacing:.04em;
+    font-size:calc(min(1.8rem, (100vw - 54px - min(36vw, 168px)) / 7.5) * (1 - var(--p))); opacity:calc(1 - var(--p) * 1.284); margin-bottom:calc(.16em * (1 - var(--p))); }
+  h1 .name { display:inline-block; position:relative; z-index:0; white-space:nowrap; padding:0 .06em;
+    font-size:calc(min(3.8rem, (100vw - 54px - min(36vw, 168px)) / 4.35) * (1 - .5 * var(--p))); }
+  h1 .name::before { content:""; position:absolute; z-index:-1; left:-.04em; right:-.06em; top:.24em; bottom:.04em;
+    background:var(--neon); transform:rotate(-1.4deg) skewX(-6deg); border-radius:.05em; }
+  .label { display:block; line-height:1.5; color:var(--patina); white-space:nowrap;
+    font-size:calc(.66rem - .12rem * var(--p)); margin-top:calc(12px - 7px * var(--p)); }
+  .label .l1, .label .l2 { display:block; }
+  .flag { display:inline-block; width:15px; height:9px; margin:0 .45em 0 .05em; vertical-align:middle; position:relative; top:-1px; }
+  .flag svg { display:block; width:100%; height:100%; }
+  .label b { font-family:var(--display); font-weight:400; font-size:1.6em; letter-spacing:0; color:var(--ink); margin-right:.4em; vertical-align:-.12em; }
+  .label .sep { display:none; }
+
+  /* links */
+  .primary { display:flex; flex-direction:column; gap:12px; }
+  .secondary { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+  .card { display:flex; align-items:center; gap:14px; text-decoration:none; color:var(--ink);
+    background:linear-gradient(var(--neon), var(--neon)) no-repeat left / 0% 100%, var(--paper);
+    border:2px solid var(--ink); border-radius:16px; box-shadow:0 3px 0 var(--ink);
+    transition:background-size .28s ease, transform .12s ease, box-shadow .12s ease; }
+  .card:hover, .card:focus-visible { background-size:100% 100%, auto; transform:translateY(-2px); box-shadow:0 5px 0 var(--ink); outline:none; }
+  .card:active { transform:translateY(2px); box-shadow:0 1px 0 var(--ink); }
+  .ico { flex:none; display:grid; place-items:center; background:var(--mint); border-radius:12px; transition:background .2s ease; }
+  .ico svg { fill:var(--patina); transition:fill .2s ease; }
+  .card:hover .ico, .card:focus-visible .ico { background:var(--ink); }
+  .card:hover .ico svg, .card:focus-visible .ico svg { fill:var(--neon); }
+  .big { padding:12px 18px 12px 12px; }
+  .big .ico { width:52px; height:52px; } .big .ico svg { width:26px; height:26px; }
+  .big .txt { display:flex; flex-direction:column; flex:1; }
+  .big .name { font-weight:800; font-size:1.15rem; }
+  .big .handle { font-family:var(--mono); font-size:.78rem; color:var(--muted); }
+  .big .go { font-size:1.3rem; color:var(--muted); }
+  .small { padding:9px 12px 9px 9px; border-radius:14px; }
+  .small .ico { width:36px; height:36px; border-radius:10px; } .small .ico svg { width:18px; height:18px; }
+  .small .name { font-weight:800; font-size:.98rem; }
+
+  /* prescription slip */
+  .slip { position:relative; margin-top:30px; background:var(--paper); border:2px solid var(--ink); border-radius:6px;
+    padding:20px 22px 18px; box-shadow:0 3px 0 var(--ink); }
+  .slip::before, .slip::after { content:""; position:absolute; left:10px; right:10px; height:8px;
+    background:radial-gradient(circle at 4px 4px, var(--coat) 2.5px, transparent 3px) repeat-x; background-size:12px 8px; }
+  .slip::before { top:-5px; } .slip::after { bottom:-5px; }
+  .rx { position:absolute; left:20px; top:12px; font-family:var(--display); font-size:2.8rem; line-height:1; color:var(--patina); }
+  .slip p { color:var(--muted); margin-bottom:4px; }
+  .slip a { font-weight:800; font-size:1.1rem; color:var(--ink); text-decoration:none;
+    background:linear-gradient(var(--neon),var(--neon)) no-repeat 0 92% / 100% .38em; }
+  .slip a:hover { background-size:100% 100%; }
+  footer { margin-top:34px; text-align:center; color:var(--muted); }
+
+  /* roaming camera sticker */
+  .roamer { position:fixed; left:0; top:0; width:62px; z-index:5; cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none; }
+  .roamer:active { cursor:grabbing; }
+  .roamer img { display:block; width:100%; height:auto; pointer-events:none; -webkit-user-drag:none; }
+  .bubble { position:fixed; left:0; top:0; z-index:6; pointer-events:none; font-family:var(--display); font-size:1.05rem; letter-spacing:.02em;
+    background:var(--paper); color:var(--ink); border:2px solid var(--ink); border-radius:12px; padding:3px 10px 4px; box-shadow:0 3px 0 var(--ink);
+    opacity:0; transition:opacity .2s ease; white-space:nowrap; }
+  .bubble.show { opacity:1; }
+  .bubble.mean { border:3px solid var(--neon); background:var(--ink); color:var(--neon); box-shadow:0 3px 0 #7ACC2B; }
+
+  /* desktop */
+  @media (min-width: 960px) {
+    .wrap { max-width:min(1480px, 92vw); min-height:100vh; padding:6vh 3vw;
+      display:grid; grid-template-columns:minmax(360px, 40%) 1fr; grid-template-rows:auto auto; column-gap:5vw; align-content:center; }
+    .hero { display:contents; }
+    .hero::before { display:none; }
+    .hero-art { grid-column:1; grid-row:1 / 3; align-self:start; margin-top:-3vh; }
+    .hero-text { grid-column:2; grid-row:1; align-self:end; margin-bottom:34px; }
+    main { grid-column:2; grid-row:2; align-self:start; }
+    .sticker { width:min(100%, 520px, 55vh); height:auto; overflow:visible; margin:0 auto; }
+    h1 .its { font-size:clamp(2rem, 2.6vw, 3.2rem); opacity:1; }
+    h1 .name { font-size:clamp(6rem, 9.5vw, 11.5rem); }
+    .label { font-size:.82rem; margin-top:20px; }
+    .label .l1, .label .l2 { display:inline; } .label .sep { display:inline; }
+    .flag { width:20px; height:12px; }
+    .sticker .full { opacity:1; } .sticker .head { display:none; }
+    .primary { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
+    .big { position:relative; flex-direction:column; align-items:flex-start; gap:18px; padding:18px; }
+    .big .go { position:absolute; right:18px; top:18px; }
+    .big .name { font-size:1.3rem; }
+    .secondary { grid-template-columns:repeat(4, 1fr); gap:14px; margin-top:14px; }
+    footer { text-align:left; margin-top:26px; }
+    .roamer { width:110px; }
+    .bubble { font-size:1.45rem; padding:6px 14px 7px; border-width:2.5px; border-radius:14px; box-shadow:0 4px 0 var(--ink); letter-spacing:.03em; }
+  }
+  @media (min-width: 1800px) { .wrap { transform:scale(1.2); transform-origin:top center; min-height:calc(100vh / 1.2); } .sticker { width:min(100%, 520px, 40vh); } .roamer { width:130px; } h1 .name { font-size:9rem; } }
+  @media (min-width: 2300px) { .wrap { transform:scale(1.4); transform-origin:top center; min-height:calc(100vh / 1.4); } .sticker { width:min(100%, 520px, 33vh); } .roamer { width:150px; } h1 .name { font-size:8.6rem; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation:none !important; transition:none !important; }
+  }
+
+.frozen { --p:0; }
+.frozen .sticker .full { opacity:.75; }
+.frozen .sticker { position:relative; }
+.frozen .soon { position:absolute; z-index:2; left:50%; top:46%; transform:translate(-50%,-50%) rotate(-6deg);
+  font-family:'Anton', Impact, sans-serif; font-size:clamp(1.4rem, 3.2vw, 2.4rem); letter-spacing:.04em; text-transform:uppercase;
+  background:var(--neon); color:var(--ink); border:3px solid var(--ink); border-radius:12px; padding:.25em .7em;
+  white-space:nowrap; box-shadow:0 5px 0 var(--ink); pointer-events:none; }
+.frozen nav .card { pointer-events:none; cursor:default; opacity:.4; filter:grayscale(1); }
+@media (max-width: 700px) { .frozen .sticker { overflow:visible; } .frozen .soon { font-size:.8rem; border-width:2px; border-radius:7px; box-shadow:0 3px 0 var(--ink); top:50%; } }
+</style>
+</head>
+<body class="frozen">
+  <div class="wrap">
+    <header class="hero">
+      <div class="hero-art">
+        <div class="sticker"><span class="soon">Coming soon</span><img class="full" src="/assets/frozen.png?v=0028203c" alt="" width="377" height="484" draggable="false"></div>
+      </div>
+      <div class="hero-text">
+        <h1><span class="its">It's</span><span class="name">Dr. Mean</span></h1>
+        <p class="label mono"><span class="l1"><b>Rx</b> Patient: <span class="flag" aria-label="Germany" role="img"><svg viewBox="0 0 5 3" preserveAspectRatio="none" shape-rendering="crispEdges"><rect width="5" height="1" fill="#000000"/><rect y="1" width="5" height="1" fill="#DD0000"/><rect y="2" width="5" height="1" fill="#FFCE00"/></svg></span>Berlin</span><span class="l2"><span class="sep">&nbsp;·&nbsp;</span>Dosage: few minutes</span></p>
+      </div>
+    </header>
+    <main>
+      <nav aria-label="Dr. Mean on social media">
+        <div class="primary">
+        <a class="card big" aria-disabled="true" tabindex="-1" draggable="false">
+          <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></span>
+          <span class="txt"><span class="name">Instagram</span></span>
+          <span class="go" aria-hidden="true">→</span>
+        </a>
+        <a class="card big" aria-disabled="true" tabindex="-1" draggable="false">
+          <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></span>
+          <span class="txt"><span class="name">TikTok</span></span>
+          <span class="go" aria-hidden="true">→</span>
+        </a>
+        <a class="card big" aria-disabled="true" tabindex="-1" draggable="false">
+          <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></span>
+          <span class="txt"><span class="name">YouTube</span></span>
+          <span class="go" aria-hidden="true">→</span>
+        </a>
+        </div>
+        <div class="secondary">
+        <a class="card small" aria-disabled="true" tabindex="-1" draggable="false">
+          <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg></span><span class="name">X</span>
+        </a>
+        <a class="card small" aria-disabled="true" tabindex="-1" draggable="false">
+          <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12 1.033-.301.165-.088.344-.104.464-.104.182 0 .359.029.509.09.45.149.734.479.734.838.015.449-.39.839-1.213 1.168-.089.029-.209.075-.344.119-.45.135-1.139.36-1.333.81-.09.224-.061.524.12.868l.015.015c.06.136 1.526 3.475 4.791 4.014.255.044.435.27.42.509 0 .075-.015.149-.045.225-.24.569-1.273.988-3.146 1.271-.059.091-.12.375-.164.57-.029.179-.074.36-.134.553-.076.271-.27.405-.555.405h-.03c-.135 0-.313-.031-.538-.074-.36-.075-.765-.135-1.273-.135-.3 0-.599.015-.913.074-.6.104-1.123.464-1.723.884-.853.599-1.826 1.288-3.294 1.288-.06 0-.119-.015-.18-.015h-.149c-1.468 0-2.427-.675-3.279-1.288-.599-.42-1.107-.779-1.707-.884-.314-.045-.629-.074-.928-.074-.54 0-.958.089-1.272.149-.211.043-.391.074-.54.074-.374 0-.523-.224-.583-.42-.061-.192-.09-.389-.135-.567-.046-.181-.105-.494-.166-.57-1.918-.222-2.95-.642-3.189-1.226-.031-.063-.052-.15-.055-.225-.015-.243.165-.465.42-.509 3.264-.54 4.73-3.879 4.791-4.02l.016-.029c.18-.345.224-.645.119-.869-.195-.434-.884-.658-1.332-.809-.121-.029-.24-.074-.346-.119-1.107-.435-1.257-.93-1.197-1.273.09-.479.674-.793 1.168-.793.146 0 .27.029.383.074.42.194.789.3 1.104.3.234 0 .384-.06.465-.105l-.046-.569c-.098-1.626-.225-3.651.307-4.837C7.392 1.077 10.739.807 11.727.807l.419-.015h.06z"/></svg></span><span class="name">Snapchat</span>
+        </a>
+        <a class="card small" aria-disabled="true" tabindex="-1" draggable="false">
+          <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z"/></svg></span><span class="name">Threads</span>
+        </a>
+        <a class="card small" aria-disabled="true" tabindex="-1" draggable="false">
+          <span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg></span><span class="name">Facebook</span>
+        </a>
+        </div>
+      </nav>
+      <section class="slip" aria-label="Contact">
+        <p class="mono">Collabs &amp; business</p>
+        <a href="mailto:contact@drmean.com" draggable="false">contact@drmean.com</a>
+      </section>
+      <footer class="mono">© 2026 Dr. Mean</footer>
+    </main>
+  </div>
+</body>
+</html>
